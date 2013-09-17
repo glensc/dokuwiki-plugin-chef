@@ -133,6 +133,7 @@ class syntax_plugin_chef extends DokuWiki_Syntax_Plugin {
 
 		$renderer->listu_open();
 		foreach ($result->rows as $item) {
+			$this->merge_attributes($item);
 			$renderer->listitem_open(1);
 			$renderer->listcontent_open();
 			foreach ($data['format'] as $pos => $val) {
@@ -216,6 +217,22 @@ class syntax_plugin_chef extends DokuWiki_Syntax_Plugin {
 			throw new RuntimeException($error);
 		}
 		return $res;
+	}
+
+	/**
+	 * Merge attributes back to 'attributes' key, instead of having them under four different 'pools'
+	 * default, normal, override, automatic
+	 *
+	 * @link https://tickets.opscode.com/browse/CHEF-4548
+	 * @param object $node Chef::Node class
+	 */
+	private function merge_attributes(&$node) {
+		$node->attributes = (object)array_merge(
+			(array)$node->default,
+			(array)$node->normal,
+			(array)$node->override,
+			(array)$node->automatic
+		);
 	}
 
 	/**

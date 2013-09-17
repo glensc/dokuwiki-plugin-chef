@@ -1,7 +1,7 @@
 base   chef
 author Elan Ruusamäe
 email  glen@delfi.ee
-date   2013-09-13
+date   2013-09-18
 name   Chef API client
 desc   Search Chef Server API and format results
 url    http://www.dokuwiki.org/plugin:chef
