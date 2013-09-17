@@ -13,6 +13,13 @@ will not work!
 Please refer to http://www.dokuwiki.org/plugins for additional info
 on how to install plugins in DokuWiki.
 
+# Creating client for dokuwiki:
+
+run:
+$ knife user create dokuwiki -p PASSWORD
+
+and save output as `client.pem`
+
 ----
 Copyright (C) Elan Ruusamäe <glen@delfi.ee>
 

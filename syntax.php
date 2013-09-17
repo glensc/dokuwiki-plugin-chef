@@ -1,6 +1,6 @@
 <?php
 /**
- * DokuWiki Plugin chef (Syntax Component)
+ * DokuWiki Plugin Chef (Syntax Component)
  *
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Elan Ruusamäe <glen@delfi.ee>
@@ -14,21 +14,21 @@ class syntax_plugin_chef extends DokuWiki_Syntax_Plugin {
 	 * @return string Syntax mode type
 	 */
 	public function getType() {
-		return 'FIXME: container|baseonly|formatting|substition|protected|disabled|paragraphs';
+		return 'substition';
 	}
 
 	/**
 	 * @return string Paragraph type
 	 */
 	public function getPType() {
-		return 'FIXME: normal|block|stack';
+		return 'block';
 	}
 
 	/**
 	 * @return int Sort order - Low numbers go before high numbers
 	 */
 	public function getSort() {
-		return FIXME;
+		return 306;
 	}
 
 	/**
@@ -37,13 +37,8 @@ class syntax_plugin_chef extends DokuWiki_Syntax_Plugin {
 	 * @param string $mode Parser mode
 	 */
 	public function connectTo($mode) {
-		$this->Lexer->addSpecialPattern('<FIXME>', $mode, 'plugin_chef');
-//        $this->Lexer->addEntryPattern('<FIXME>',$mode,'plugin_chef');
+		$this->Lexer->addSpecialPattern('\{\{chef>.+?\}\}', $mode, 'plugin_chef');
 	}
-
-//    public function postConnect() {
-//        $this->Lexer->addExitPattern('</FIXME>','plugin_chef');
-//    }
 
 	/**
 	 * Handle matches of the chef syntax
@@ -56,7 +51,9 @@ class syntax_plugin_chef extends DokuWiki_Syntax_Plugin {
 	 */
 	public function handle($match, $state, $pos, &$handler) {
 		$data = array();
+		$raw = substr($match, 7, -2);
 
+		$data = array('q' => $raw);
 		return $data;
 	}
 
@@ -69,9 +66,50 @@ class syntax_plugin_chef extends DokuWiki_Syntax_Plugin {
 	 * @return bool If rendering was successful.
 	 */
 	public function render($mode, &$renderer, $data) {
-		if ($mode != 'xhtml') return false;
+		if ($mode != 'xhtml') {
+			return false;
+		}
+
+		// for debug
+		$renderer->info['cache'] = false;
+
+		try {
+			$res = $this->api('/search/node', 'GET', array('q' => $data['q']));
+		} catch (Exception $e) {
+			msg('chef: ' . $e->getMessage(), -1);
+			return false;
+		}
+
+		echo "Search: <b>", $res->total, "</b> matches: <pre>";
+		print_r($res);
+		echo "</pre>";
 
 		return true;
+	}
+
+	/**
+	 * Chef API calls.
+	 *
+	 * @param  string  $endpoint
+	 * @param  mixed   $data
+	 * @param  string  $method
+	 * @throws RuntimeException
+	 * @return mixed
+	 */
+	private function api($endpoint, $method = 'GET', $data = false) {
+		static $chef;
+		if (!$chef) {
+			require_once dirname(__FILE__) . '/vendor/autoload.php';
+			$config = $this->getConf('api');
+			$chef = new \Jenssegers\Chef\Chef($config['server'], $config['client'], $config['key'], $config['version']);
+		}
+
+		$res = $chef->api($endpoint, $method, $data);
+		if (isset($res->error)) {
+			$error = join(', ', $res->error);
+			throw new RuntimeException($error);
+		}
+		return $res;
 	}
 }
 

@@ -1,0 +1,13 @@
+{
+	"name": "glensc/dokuwiki-plugin-chef",
+	"authors": [
+		{
+			"name": "Elan Ruusamäe",
+			"email": "glen@delfi.ee"
+		}
+	],
+	"require": {
+		"php": ">=5.0.0",
+		"jenssegers/chef": "dev-master"
+	}
+}
