@@ -1,6 +1,7 @@
 Chef Plugin for DokuWiki
 
 Search Chef Server API and format results
+http://docs.opscode.com/api_chef_server.html
 
 All documentation for this plugin can be found at
 https://www.dokuwiki.org/plugin:chef
